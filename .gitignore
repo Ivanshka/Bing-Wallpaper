@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# мои исключения
+.vs
+Sender Old
+*/bin/
+*/obj/
