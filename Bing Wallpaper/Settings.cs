@@ -14,8 +14,9 @@ namespace Bing_Wallpaper
         static CheckBox notification = new CheckBox(); // уведомлялка о весе папки
         static NumericUpDown num = new NumericUpDown(); // кол-во мб
         static CheckBox dbg = new CheckBox(); // режим debug'а
-        static CheckBox pirate = new CheckBox(); // режим pirate'а
-        
+        static CheckBox installAlways = new CheckBox(); // всегда обновлять обои
+        static CheckBox noNotifications = new CheckBox(); // режим "без уведомлений"
+
         /// <summary>
         /// Сохраняет настройки
         /// </summary>
@@ -105,7 +106,7 @@ namespace Bing_Wallpaper
                 Properties.Settings.Default.Debug = false;
             }
 
-            if (pirate.CheckState == CheckState.Checked)
+            if (installAlways.CheckState == CheckState.Checked)
             {
                 Properties.Settings.Default.AlwaysRun = true;
             }
@@ -180,8 +181,8 @@ namespace Bing_Wallpaper
             num.Top = 50;
             num.Left = 243;
 
-            autostart.Left = pause.Left = notification.Left = dbg.Left = pirate.Left = 10;
-            autostart.Width = pause.Width = dbg.Width = pirate.Width = 300;
+            autostart.Left = pause.Left = notification.Left = dbg.Left = installAlways.Left = 10;
+            autostart.Width = pause.Width = dbg.Width = installAlways.Width = 300;
             notification.Width = 233;
 
             // Инициализация чекбокса дебага
@@ -194,14 +195,14 @@ namespace Bing_Wallpaper
             tDebug.SetToolTip(dbg, "Включает логирование работы программы. Используется при тестировании.");
 
             // Инициализация чекбокса пирата
-            pirate.Top = 90;
-            pirate.Height = 30;
-            pirate.Text = "\"Пиратский режим\" (всегда обновлять обои)";
-            if (Properties.Settings.Default.AlwaysRun) pirate.CheckState = CheckState.Checked;
+            installAlways.Top = 90;
+            installAlways.Height = 30;
+            installAlways.Text = "\"Пиратский режим\" (всегда обновлять обои)";
+            if (Properties.Settings.Default.AlwaysRun) installAlways.CheckState = CheckState.Checked;
             
             // инициализация подсказки к чекбоксу пирата
             ToolTip tPirat = new ToolTip();
-            tPirat.SetToolTip(pirate, "Установка обоев будет происходить независимо от наличия новых обоев\nи подключения к Интернету, что полезно на пиратских копиях Windows.\nПри отстствии Интернета устанавливаться последние скачанные обои.");
+            tPirat.SetToolTip(installAlways, "Установка обоев будет происходить независимо от наличия новых обоев\nи подключения к Интернету, что полезно на пиратских копиях Windows.\nПри отстствии Интернета устанавливаться последние скачанные обои.");
 
             s.Controls.Add(logo);
             s.Controls.Add(autostart);
@@ -209,7 +210,7 @@ namespace Bing_Wallpaper
             s.Controls.Add(notification);
             s.Controls.Add(num);
             s.Controls.Add(dbg);
-            s.Controls.Add(pirate);
+            s.Controls.Add(installAlways);
             Application.Run(s);
             CloseSettings();
         }
