@@ -58,6 +58,7 @@ namespace Bing_Wallpaper
             {
                 switch (args[0])
                 {
+                    case "-config":
                     case "-s":
                         // открываем настройки
                         Application.Run(new SettingsWindow());
@@ -75,9 +76,11 @@ namespace Bing_Wallpaper
                 }
             }
 
+            if (!Properties.Settings.Default.NoNotify)
+            {
             tray.BalloonTipText = "Запуск...";
             tray.ShowBalloonTip(3000);
-
+        }
             // проверяем, какое разрешение экрана. если 5 : 4 - вырубаем
             if ((Screen.PrimaryScreen.Bounds.Size.Width == 1280) && (Screen.PrimaryScreen.Bounds.Size.Height == 1024))
                 {
@@ -124,8 +127,11 @@ namespace Bing_Wallpaper
                         // сохраняем настройки
                         Properties.Settings.Default.Save();
 
-                        tray.ShowBalloonTip(3000);
+                        if (!Properties.Settings.Default.NoNotify)
+                        {
+                            tray.ShowBalloonTip(3000);
                         Thread.Sleep(3000);
+                    }
 
                         tray.Visible = false;
 
@@ -159,7 +165,8 @@ namespace Bing_Wallpaper
 
             // если "только загрузка" - только загружаем
             tray.BalloonTipText = "Получение кода...";
-            tray.ShowBalloonTip(3000);
+            if (!Properties.Settings.Default.NoNotify)
+                tray.ShowBalloonTip(3000);
             if (Properties.Settings.Default.Debug == true)
                 Vars.Debug("Получение кода...");
             WallInstaller.GetHTML();
@@ -169,7 +176,8 @@ namespace Bing_Wallpaper
                 Vars.Debug(Vars.HTMLCode);
             }
             tray.BalloonTipText = "Выделение ссылки...";
-            tray.ShowBalloonTip(3000);
+            if (!Properties.Settings.Default.NoNotify)
+                tray.ShowBalloonTip(3000);
             if (Properties.Settings.Default.Debug == true)
                 Vars.Debug("Выделяю ссылку...");
             WallInstaller.GetURL();
@@ -179,14 +187,16 @@ namespace Bing_Wallpaper
                 Vars.Debug(Vars.Url);
             }
             tray.BalloonTipText = "Загрузка обоев...";
-            tray.ShowBalloonTip(3000);
+            if (!Properties.Settings.Default.NoNotify)
+                tray.ShowBalloonTip(3000);
             if (Properties.Settings.Default.Debug == true)
                 Vars.Debug("Скачиваю файл...");
             WallInstaller.Download();
 
             // если нет - еще и обои ставим
             tray.BalloonTipText = "Последний этап...";
-            tray.ShowBalloonTip(3000);
+            if (!Properties.Settings.Default.NoNotify)
+                tray.ShowBalloonTip(3000);
             if (Properties.Settings.Default.OnlyDown == false)
                 WallInstaller.Install();
 
@@ -203,8 +213,11 @@ namespace Bing_Wallpaper
 
             tray.BalloonTipText += "\nЗавершение работы...";
 
-            tray.ShowBalloonTip(3000);
-            Thread.Sleep(3000);
+            if (!Properties.Settings.Default.NoNotify)
+            {
+                tray.ShowBalloonTip(3000);
+                Thread.Sleep(3000);
+            }
 
             tray.Visible = false;
         }

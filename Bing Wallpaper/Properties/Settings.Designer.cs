@@ -106,5 +106,17 @@ namespace Bing_Wallpaper.Properties {
                 this["Name"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool NoNotify {
+            get {
+                return ((bool)(this["NoNotify"]));
+            }
+            set {
+                this["NoNotify"] = value;
+            }
+        }
     }
 }

@@ -1,10 +1,4 @@
 ﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Bing_Wallpaper
@@ -20,6 +14,7 @@ namespace Bing_Wallpaper
             if (Properties.Settings.Default.Notify) notification.CheckState = CheckState.Checked;
             if (Properties.Settings.Default.Debug) dbg.CheckState = CheckState.Checked;
             if (Properties.Settings.Default.AlwaysRun) installAlways.CheckState = CheckState.Checked;
+            if (Properties.Settings.Default.NoNotify) noNotifications.CheckState = CheckState.Checked;
             num.Value = Properties.Settings.Default.MaxMB;
 
             // инициализация подсказки к чекбоксу автозагрузки
@@ -37,8 +32,12 @@ namespace Bing_Wallpaper
             // инициализация подсказки к чекбоксу пирата
             ToolTip tInstallAlways = new ToolTip();
             tInstallAlways.SetToolTip(installAlways, "Установка обоев будет происходить независимо от наличия новых обоев\nи подключения к Интернету, что полезно на пиратских копиях Windows.\nПри отстствии Интернета устанавливаться последние скачанные обои.");
+
+            // инициализация подсказки к чекбоксу пирата
+            ToolTip tNoNotifications = new ToolTip();
+            tInstallAlways.SetToolTip(noNotifications, "При работе уведомления будут лишь в случае ошибок. Имеет более высокий\nприоритет по сравнению с параметром, отвечающим за уведомление о размере папки.");
         }
-        
+
         /// <summary>
         /// Управляет автозагрузкой программы.
         /// </summary>
@@ -131,6 +130,15 @@ namespace Bing_Wallpaper
             else
             {
                 Properties.Settings.Default.AlwaysRun = false;
+            }
+
+            if (noNotifications.CheckState == CheckState.Checked)
+            {
+                Properties.Settings.Default.NoNotify = true;
+            }
+            else
+            {
+                Properties.Settings.Default.NoNotify = false;
             }
 
             try
