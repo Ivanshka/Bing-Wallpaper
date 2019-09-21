@@ -16,15 +16,7 @@ namespace Bing_Wallpaper
         static CheckBox dbg = new CheckBox(); // режим debug'а
         static CheckBox installAlways = new CheckBox(); // всегда обновлять обои
         static CheckBox noNotifications = new CheckBox(); // режим "без уведомлений"
-
-        /// <summary>
-        /// Сохраняет настройки
-        /// </summary>
-        public static void Save()
-        {
-            Properties.Settings.Default.Save();
-        }
-
+        
         /// <summary>
         /// Управляет автозагрузкой программы.
         /// </summary>

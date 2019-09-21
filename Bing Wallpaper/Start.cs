@@ -60,7 +60,7 @@ namespace Bing_Wallpaper
                 {
                     case "-s":
                         // открываем настройки
-                        Settings.Show();
+                        Application.Run(new SettingsWindow());
                         tray.Visible = false;
                         return;
                     case "-a":
