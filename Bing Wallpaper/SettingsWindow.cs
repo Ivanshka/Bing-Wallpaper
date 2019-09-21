@@ -143,5 +143,11 @@ namespace Bing_Wallpaper
                 MessageBox.Show("Не удалось сохранить настройки! Убедитесь, что достаточно прав на запись в папку.", "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
             }
         }
+
+        private void about_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            AboutBox ab = new AboutBox();
+            ab.Show();
+        }
     }
 }

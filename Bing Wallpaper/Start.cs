@@ -65,7 +65,7 @@ namespace Bing_Wallpaper
                         return;
                     case "-a":
                         // открываем "О программе"
-                        About.Show();
+                        Application.Run(new AboutBox());
                         tray.Visible = false;
                         return;
                     default:

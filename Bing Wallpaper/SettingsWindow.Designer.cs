@@ -39,6 +39,7 @@
             this.noNotifications = new System.Windows.Forms.CheckBox();
             this.dbg = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.about = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.num)).BeginInit();
             this.SuspendLayout();
@@ -46,7 +47,7 @@
             // pictureBox1
             // 
             this.pictureBox1.Image = global::Bing_Wallpaper.Properties.Resources.picture;
-            this.pictureBox1.Location = new System.Drawing.Point(276, 10);
+            this.pictureBox1.Location = new System.Drawing.Point(276, 0);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(128, 128);
             this.pictureBox1.TabIndex = 0;
@@ -120,11 +121,23 @@
             this.dbg.Text = "Режим отладки\r\n(запись логов)";
             this.dbg.UseVisualStyleBackColor = true;
             // 
+            // about
+            // 
+            this.about.AutoSize = true;
+            this.about.Location = new System.Drawing.Point(303, 131);
+            this.about.Name = "about";
+            this.about.Size = new System.Drawing.Size(75, 13);
+            this.about.TabIndex = 8;
+            this.about.TabStop = true;
+            this.about.Text = "О программе";
+            this.about.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.about_LinkClicked);
+            // 
             // SettingsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(404, 145);
+            this.Controls.Add(this.about);
             this.Controls.Add(this.dbg);
             this.Controls.Add(this.noNotifications);
             this.Controls.Add(this.installAlways);
@@ -156,5 +169,6 @@
         private System.Windows.Forms.CheckBox noNotifications;
         private System.Windows.Forms.CheckBox dbg;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.LinkLabel about;
     }
 }

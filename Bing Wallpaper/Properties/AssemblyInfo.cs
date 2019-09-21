@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
 [assembly: AssemblyTitle("Bing Wallpaper")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Bing Wallpaper - программа автоматической загрузки и установки заставок с сайта Bing.com")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Bing Wallpaper - программа автоматической загрузки и установки заставок с сайта Bing.com")]
+[assembly: AssemblyProduct("Bing Wallpaper")]
 [assembly: AssemblyCopyright("© Павлович Иван, 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
