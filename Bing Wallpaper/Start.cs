@@ -12,7 +12,7 @@ namespace Bing_Wallpaper
     public class Start
     {
         /// <summary>
-        /// Проверяет наличие соединения с интернетом
+        /// Проверяет наличие соединения с интернетом через ping yandex.ru
         /// </summary>
         static bool CheckConnection()
         {
@@ -20,7 +20,7 @@ namespace Bing_Wallpaper
             try
             {
                 System.Net.NetworkInformation.Ping ping = new System.Net.NetworkInformation.Ping();
-                System.Net.NetworkInformation.PingReply pingReply = ping.Send("www.bing.com");
+                System.Net.NetworkInformation.PingReply pingReply = ping.Send("yandex.ru");
                 if (pingReply.Status == System.Net.NetworkInformation.IPStatus.Success)
                     return true;
                 else
