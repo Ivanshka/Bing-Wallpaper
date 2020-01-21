@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
 [assembly: AssemblyTitle("Bing Wallpaper")]
-[assembly: AssemblyDescription("Bing Wallpaper - программа автоматической загрузки и установки заставок с сайта Bing.com")]
+[assembly: AssemblyDescription("Bing Wallpaper - программа автоматической загрузки и установки обоев с сайта Bing.com")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Bing Wallpaper")]
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // Можно задать все значения или принять номер сборки и номер редакции по умолчанию.
 // используя "*", как показано ниже:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.5.1.0")]
-[assembly: AssemblyFileVersion("3.5.1.0")]
+[assembly: AssemblyVersion("3.5.2.0")]
+[assembly: AssemblyFileVersion("3.5.2.0")]

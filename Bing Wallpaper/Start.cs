@@ -111,7 +111,7 @@ namespace Bing_Wallpaper
                         if (Properties.Settings.Default.Debug == true)
                             Vars.Debug("Доступа к Интернету нет. Ставлю последние обои...");
                         // то ставим последнюю обоину
-                        Vars.WEBFILENAME = Properties.Settings.Default.Name;
+                        Vars.OriginalName = Properties.Settings.Default.Name;
                         tray.BalloonTipText = "Отсутствует соединение с интернетом.\nСтавлю последние обои...";
                         tray.ShowBalloonTip(3000);
                         Thread.Sleep(3000);
@@ -180,7 +180,7 @@ namespace Bing_Wallpaper
                 tray.ShowBalloonTip(3000);
             if (Properties.Settings.Default.Debug == true)
                 Vars.Debug("Выделяю ссылку...");
-            WallInstaller.GetURL();
+            WallInstaller.GetUrlAndName();
             if (Properties.Settings.Default.Debug == true)
             {
                 Vars.Debug("Ссылка выделена:");

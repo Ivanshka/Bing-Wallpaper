@@ -9,7 +9,7 @@ namespace Bing_Wallpaper
     /// <summary>
     /// Класс переменных, констант и побочных методов
     /// </summary>
-    class Vars
+    static class Vars
     {
         // settings
         /// <summary>
@@ -25,7 +25,7 @@ namespace Bing_Wallpaper
         /// <summary>
         /// Настоящее имя файла
         /// </summary>
-        public static string WEBFILENAME;
+        public static string OriginalName;
 
         /// <summary>
         /// Время записи лога. Переменная нужна для беспрерывной записи инфы в файл при смене времени в ходе работы программы
@@ -36,9 +36,21 @@ namespace Bing_Wallpaper
         /// Полный путь к exe'шнику программы
         /// </summary>
         public static string FullExePath;
-        
+
         /// <summary>
-        /// Подготавливает программу к записи логов: 
+        /// Вспомогательная функция реверсирования строки
+        /// </summary>
+        /// <param name="s">Строка для реверсирования</param>
+        /// <returns>Возвращает перевернутую строку</returns>
+        public static string ReverseString(string s)
+        {
+            char[] arr = s.ToCharArray();
+            Array.Reverse(arr);
+            return new string(arr);
+        }
+
+        /// <summary>
+        /// Подготовка к записи логов 
         /// </summary>
         public static void DebugInit()
         {
@@ -53,7 +65,7 @@ namespace Bing_Wallpaper
         }
 
         /// <summary>
-        /// Метод записи логов
+        /// Запись логов
         /// </summary>
         /// <param name="message"></param>
         public static void Debug(string message)
@@ -69,7 +81,7 @@ namespace Bing_Wallpaper
         public static int FolderSize;
 
         /// <summary>
-        /// Возвращает объем папки с обоями
+        /// Вычисляет объем папки с обоями
         /// </summary>
         /// <param name="folderPath"></param>
         /// <returns></returns>

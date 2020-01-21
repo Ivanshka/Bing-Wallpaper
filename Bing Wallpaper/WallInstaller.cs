@@ -10,9 +10,8 @@ using System.Windows.Forms;
 
 namespace Bing_Wallpaper
 {
-    public class WallInstaller
+    public static class WallInstaller
     {
-
         // подключаем и настраиваем API
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern int SystemParametersInfo(
@@ -20,20 +19,6 @@ namespace Bing_Wallpaper
         public const int SPI_SETDESKWALLPAPER = 20;
         public const int SPIF_UPDATEINIFILE = 0x1;
         public const int SPIF_SENDWININICHANGE = 0x2;
-
-
-        /// <summary>
-        /// Вспомогательная функция реверсирования строки
-        /// </summary>
-        /// <param name="s">Строка для реверсирования</param>
-        /// <returns>Возвращает перевернутую строку</returns>
-        public static string ReverseString(string s)
-        {
-            char[] arr = s.ToCharArray();
-            Array.Reverse(arr);
-            return new string(arr);
-        }
-
 
         /// <summary>
         /// Получает код страницы
@@ -68,25 +53,27 @@ namespace Bing_Wallpaper
         /// Метод получения ссылки из HTML-кода страницы
         /// </summary>
         /// <returns></returns>
-        public static void GetURL()
+        public static void GetUrlAndName()
         {
             /// Временная переменная для выделения ссылки
             int point;
             /// Временная переменная для записи ссылки
-            string temp = "";
+            //null;// = 0ew StringBuilder();
 
-            // выделяем ссылку из текста через поиск точек
-            point = Vars.HTMLCode.IndexOf("g_img={url:"); // ищем точку начала ссылки
-            Vars.HTMLCode = Vars.HTMLCode.Remove(0, point + 13); //удаляем лишний код с учетом точки для поиска
-            point = Vars.HTMLCode.IndexOf(".jpg"); // ищем точку конца ссылки
-            point += 4; // правим точку
-            for (int i = 0; i < point; i++) //выделяем ссылку из текста
+            try
             {
-                temp += Vars.HTMLCode[i];
+                char[] temp = new char[256];
+                // выделяем ссылку из текста через поиск точек
+                point = Vars.HTMLCode.IndexOf("link rel=\"preload\" href=\""); // ищем точку начала ссылки
+                Vars.HTMLCode = Vars.HTMLCode.Remove(0, point + 25); //удаляем лишний код с учетом точки для поиска
+                point = Vars.HTMLCode.IndexOf("\" as=\"image\""); // ищем точку конца ссылки
+                Vars.HTMLCode.CopyTo(0, temp, 0, point);
+                //for (int i = 0; i < point; i++) //выделяем ссылку из текста
+                //    temp.Append(Vars.HTMLCode[i]);
+
+                Vars.Url = new string(temp);
             }
-
-            Vars.Url = temp;
-
+            catch (Exception e) { Vars.Debug($"Ошибка выделения ссылки: {e.Message}"); }
             // подгоняем ссылку на файл с нужным разрешением: 
             //640 х 480
             //800 х 600
@@ -94,12 +81,11 @@ namespace Bing_Wallpaper
             //1920 х 1080
             //1920 х 1200
 
-            Vars.Url = ReverseString(Vars.Url); // 1. переворачиваем строку
-            Console.WriteLine(Vars.Url);
+            Vars.Url = Vars.ReverseString(Vars.Url); // 1. переворачиваем строку
 
             point = Vars.Url.IndexOf("_"); // 2. ищем место, где пишется разрешение картинки в имени файла
             Vars.Url = Vars.Url.Remove(0, point); // 3. удаляем лишний код с учетом точки для поиска
-            Vars.Url = ReverseString(Vars.Url); // 4. переворачиваем строку
+            Vars.Url = Vars.ReverseString(Vars.Url); // 4. переворачиваем строку
 
             // 5. теперь добавляем к имени файла нужный вариант разрешения
 
@@ -119,18 +105,21 @@ namespace Bing_Wallpaper
                 Vars.Url += "1920x1200.jpg";
             else // 16 : 9 (scale = 1.77) и остальные
                 Vars.Url += "1920x1080.jpg";
+
+            // выделяем настоящее имя файла из ссылки
+            Vars.OriginalName = Vars.Url;
+            //MessageBox.Show(Vars.OriginalName);
+            // чистим имя с начала строки
+            Vars.OriginalName = Vars.OriginalName.Remove(0, 11);
+            // и с конца
+            Vars.OriginalName = Vars.OriginalName.Remove(Vars.OriginalName.IndexOf(".jpg") + 4, Vars.OriginalName.Length - (Vars.OriginalName.IndexOf(".jpg") + 4));
+            //MessageBox.Show(Vars.OriginalName);
         }
 
         public static void Download()
         {
-            // выделяем настоящее имя файла из ссылки
-            Vars.WEBFILENAME = Vars.Url;
-            //MessageBox.Show(Vars.WEBFILENAME);
-            Vars.WEBFILENAME = Vars.WEBFILENAME.Remove(0, 11);
-            //MessageBox.Show(Vars.WEBFILENAME);
-
             // если такая обоина уже есть
-            if (File.Exists(Vars.FullExePath + "\\images\\" + Vars.WEBFILENAME))
+            if (File.Exists(Vars.FullExePath + "\\images\\" + Vars.OriginalName))
             {
                 if (Properties.Settings.Default.Debug == true)
                     Vars.Debug("Новые обои отсутствуют.");
@@ -153,14 +142,14 @@ namespace Bing_Wallpaper
                 // качаем новую обоину
                 try
                 {
-                    HttpWebRequest wr = (HttpWebRequest)HttpWebRequest.Create("https://www.bing.com/" + Vars.Url);
+                    HttpWebRequest wr = (HttpWebRequest)WebRequest.Create("https://www.bing.com/" + Vars.Url);
                     HttpWebResponse ws = (HttpWebResponse)wr.GetResponse();
                     Stream str = ws.GetResponseStream();
 
                     byte[] inBuf = new byte[102400];
                     int bytesReadTotal = 0;
 
-                    FileStream fstr = new FileStream(Vars.FullExePath + "\\images\\" + Vars.WEBFILENAME, FileMode.Create, FileAccess.Write);
+                    FileStream fstr = new FileStream(Vars.FullExePath + "\\images\\" + Vars.OriginalName, FileMode.Create, FileAccess.Write);
 
                     while (true)
                     {
@@ -180,7 +169,7 @@ namespace Bing_Wallpaper
 
                     if (Properties.Settings.Default.Debug == true)
                     {
-                        Vars.Debug("Файл загружен: " + Vars.WEBFILENAME);
+                        Vars.Debug("Файл загружен: " + Vars.OriginalName);
                     }
                 }
                 catch(Exception e)
@@ -190,8 +179,7 @@ namespace Bing_Wallpaper
                     Start.tray.ShowBalloonTip(3000);
                     if (Properties.Settings.Default.Debug == true)
                     {
-                        Vars.Debug("Ошибка загрузки файла:");
-                        Vars.Debug(e.Message + "\n");
+                        Vars.Debug($"Ошибка загрузки файла:\n{e.Message}\n");
                     }
                     Thread.Sleep(3000);
                     Start.tray.Visible = false;
@@ -202,39 +190,28 @@ namespace Bing_Wallpaper
         }
 
         /// <summary>
-        /// Очищает папку с обоями от временных .bmp-файлов
-        /// </summary>
-        internal static void ClearCash()
-        {
-            string[] bmp = Directory.GetFiles(Vars.FullExePath + "\\images\\", "*.bmp");
-            for (int i = 0; i < bmp.Length; i++)
-            {
-                File.Delete(bmp[i]);
-            };
-        }
-
-        /// <summary>
         /// Устанавливает обои
         /// </summary>
-        /// <param name="path">необязательный параметр. true - сохранять дату установки обоев, false - не сохранять</param>
         public static void Install()
         {
-            // чистим кеш (.bmp-копии обоев)
-            ClearCash();
-
+            // чистим кеш (старые .bmp-копии обоев)
+            string[] bmp = Directory.GetFiles(Vars.FullExePath + "\\images\\", "*.bmp");
+            foreach (string f in bmp)
+                try { File.Delete(f); } catch (Exception e) { Vars.Debug($"Не удалось удалить bmp-файл: {e.Message}"); }
+            
             // для конвертации обоев
             Image img = null;
 
             // конвертируем обои
             try
             {
-                img = Image.FromFile(Vars.FullExePath + "\\images\\" + Vars.WEBFILENAME); // полный путь к программе для совместимости с Win 10
+                img = Image.FromFile(Vars.FullExePath + "\\images\\" + Vars.OriginalName); // добавляем полный путь к программе, иначе в Win 10 не находит файл
             }
             catch
             {
                 // ставим новые обои
                 if (Properties.Settings.Default.Debug == true)
-                    Vars.Debug("Нужных обоев не оказалось.");
+                    Vars.Debug("Нужных обоев не оказалось. Возможно, файл был удален.");
                 Start.tray.BalloonTipText = "Нужный файл не был найден. Возможно, он был удален.\nЗавершение работы...";
                 Start.tray.ShowBalloonTip(3000);
                 Thread.Sleep(3000);
@@ -242,22 +219,20 @@ namespace Bing_Wallpaper
             }
             
             // обрезаем ".jpg", добавляем ".bmp" и сохраняем в новом формате
-            Vars.WEBFILENAME = Vars.WEBFILENAME.Remove(Vars.WEBFILENAME.Length - 4) + ".bmp";
-            img.Save(Vars.FullExePath + "\\images\\" + Vars.WEBFILENAME, ImageFormat.Bmp);
+            Vars.OriginalName = Vars.OriginalName.Remove(Vars.OriginalName.Length - 4) + ".bmp";
+            img.Save(Vars.FullExePath + "\\images\\" + Vars.OriginalName, ImageFormat.Bmp);
 
             // пишем в дебаг полный путь к программе
             if (Properties.Settings.Default.Debug == true)
                 Vars.Debug("Полный путь к exe'шнику: \n" + Vars.FullExePath + "\nРазрешение экрана: " + Screen.PrimaryScreen.Bounds.Width + " x " + Screen.PrimaryScreen.Bounds.Height);
 
-            // ставим новые обои
+            // ставим новые обои 
             if (Properties.Settings.Default.Debug == true)
                 Vars.Debug("Устанавливаю обои...");
-            SystemParametersInfo(SPI_SETDESKWALLPAPER, 1, Vars.FullExePath + "\\images\\" + Vars.WEBFILENAME, SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
+            SystemParametersInfo(SPI_SETDESKWALLPAPER, 1, Vars.FullExePath + "\\images\\" + Vars.OriginalName, SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
 
             // пишем имя последнего файла
-            Properties.Settings.Default.Name = Vars.WEBFILENAME.Remove(Vars.WEBFILENAME.Length - 4) + ".jpg";
-
-            return;
+            Properties.Settings.Default.Name = Vars.OriginalName.Remove(Vars.OriginalName.Length - 4) + ".jpg";
         }
     }
 }
