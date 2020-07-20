@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace Bing_Wallpaper
+namespace Wallpapers_Everyday
 {
-    public static class WallInstaller
+    public static class WallSetter
     {
         // подключаем и настраиваем API
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
@@ -92,15 +94,6 @@ namespace Bing_Wallpaper
             float scale = (float)Screen.PrimaryScreen.Bounds.Size.Width / Screen.PrimaryScreen.Bounds.Size.Height;
             scale = (float)((int)(scale * 10)) / 10;
 
-            if (Screen.PrimaryScreen.Bounds.Size.Width == 640 && Screen.PrimaryScreen.Bounds.Size.Height == 480)
-                Vars.Url += "640x480.jpg";
-            else
-            if (Screen.PrimaryScreen.Bounds.Size.Width == 800 && Screen.PrimaryScreen.Bounds.Size.Height == 600)
-                Vars.Url += "800x600.jpg";
-            else
-            if (Screen.PrimaryScreen.Bounds.Size.Width == 1024 && Screen.PrimaryScreen.Bounds.Size.Height == 768)
-                Vars.Url += "1024x768.jpg";
-            else
             if (scale == 1.6f) // 16 : 10
                 Vars.Url += "1920x1200.jpg";
             else // 16 : 9 (scale = 1.77) и остальные
@@ -134,7 +127,7 @@ namespace Bing_Wallpaper
                 if (Properties.Settings.Default.AlwaysRun == false)
                 {
                     Start.tray.Visible = false;
-                    Start.ExitProcess(0);
+                    Application.Exit();
                 }
             }
             else // если же нет
@@ -184,7 +177,7 @@ namespace Bing_Wallpaper
                     Thread.Sleep(3000);
                     Start.tray.Visible = false;
                     // и закрываем прогу
-                    Start.ExitProcess(0);
+                    Application.Exit();
                 }
             }
         }
@@ -192,13 +185,8 @@ namespace Bing_Wallpaper
         /// <summary>
         /// Устанавливает обои
         /// </summary>
-        public static void Install()
+        public static void Set()
         {
-            // чистим кеш (старые .bmp-копии обоев)
-            string[] bmp = Directory.GetFiles(Vars.FullExePath + "\\images\\", "*.bmp");
-            foreach (string f in bmp)
-                try { File.Delete(f); } catch (Exception e) { Vars.Debug($"Не удалось удалить bmp-файл: {e.Message}"); }
-            
             // для конвертации обоев
             Image img = null;
 
@@ -215,7 +203,7 @@ namespace Bing_Wallpaper
                 Start.tray.BalloonTipText = "Нужный файл не был найден. Возможно, он был удален.\nЗавершение работы...";
                 Start.tray.ShowBalloonTip(3000);
                 Thread.Sleep(3000);
-                Start.ExitProcess(0);
+                Application.Exit();
             }
             
             // обрезаем ".jpg", добавляем ".bmp" и сохраняем в новом формате
@@ -233,6 +221,58 @@ namespace Bing_Wallpaper
 
             // пишем имя последнего файла
             Properties.Settings.Default.Name = Vars.OriginalName.Remove(Vars.OriginalName.Length - 4) + ".jpg";
+
+            // удаляем .bmp-копии
+            string[] bmp = Directory.GetFiles(Vars.FullExePath + "\\images\\", "*.bmp");
+            foreach (string f in bmp)
+                try { File.Delete(f); } catch (Exception e) { Vars.Debug($"Не удалось удалить bmp-файл: {e.Message}"); }
+        }
+
+        /// <summary>
+        /// Функция сохранения заставок экрана блокировки
+        /// </summary>
+        /// <param name="savePath">Пусть сохранения</param>
+        public static void SaveWin10Interesting(string savePath)
+        {
+            // локальная функция для высчитывания хэша файла. нужна для определения, был файл или нет
+            string GetSHA512ofFile(string path)
+            {
+                using (FileStream fs = File.OpenRead(path))
+                {
+                    SHA512 sha512 = new SHA512Managed();
+                    byte[] fileData = new byte[fs.Length];
+                    fs.Read(fileData, 0, (int)fs.Length);
+                    byte[] checkSum = sha512.ComputeHash(fileData);
+                    return BitConverter.ToString(checkSum).Replace("-", string.Empty);
+                }
+            }
+
+            Directory.CreateDirectory(savePath);
+            var have = Directory.GetFiles(savePath);
+            List<string> hashes = new List<string>(have.Length);
+            for (int i = 0; i < have.Length; i++)
+                hashes.Add(GetSHA512ofFile(have[i]));
+
+            string[] files = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Packages\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\LocalState\Assets");
+            int count = 0;
+
+            int startCount = Directory.GetFiles(savePath).Length;
+
+            for (int i = 0; i < files.Length; i++)
+            {
+                Bitmap temp = new Bitmap(files[i]);
+                Console.Write(temp.Width);
+                if (temp.Width > 1080) // если это не мобилкина обоина
+                {
+                    string sha512 = GetSHA512ofFile(files[i]);
+                    if (!hashes.Contains(sha512)) // если файла еще не было
+                    {
+                        temp.Save($@"WinLogonImages\{startCount + count + 1}.jpg", ImageFormat.Jpeg);
+                        //hashes.Add(sha512);
+                        count++;
+                    }
+                }
+            }
         }
     }
 }

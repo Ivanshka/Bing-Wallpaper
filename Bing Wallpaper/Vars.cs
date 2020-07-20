@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Bing_Wallpaper
+namespace Wallpapers_Everyday
 {
     /// <summary>
     /// Класс переменных, констант и побочных методов
@@ -84,7 +84,7 @@ namespace Bing_Wallpaper
         /// Вычисляет объем папки с обоями
         /// </summary>
         /// <param name="folderPath"></param>
-        /// <returns></returns>
+        /// <returns>Размер папки в мегабайтах</returns>
         public static int GetDirectorySize(string folderPath)
         {
             string[] files = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories);

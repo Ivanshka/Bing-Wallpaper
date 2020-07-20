@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2000
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bing Wallpaper", "Bing Wallpaper\Bing Wallpaper.csproj", "{52370D35-1129-40B9-849C-6F36702CB36F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Feedback", "Feedback\Feedback.csproj", "{EA187D41-4CC9-4C06-9001-792E17E99EA8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wallpapers Everyday", "Wallpapers Everyday\Wallpapers Everyday.csproj", "{7BA35544-070B-4EFB-A9A8-5E281C33859E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{EA187D41-4CC9-4C06-9001-792E17E99EA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA187D41-4CC9-4C06-9001-792E17E99EA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA187D41-4CC9-4C06-9001-792E17E99EA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BA35544-070B-4EFB-A9A8-5E281C33859E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BA35544-070B-4EFB-A9A8-5E281C33859E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BA35544-070B-4EFB-A9A8-5E281C33859E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BA35544-070B-4EFB-A9A8-5E281C33859E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

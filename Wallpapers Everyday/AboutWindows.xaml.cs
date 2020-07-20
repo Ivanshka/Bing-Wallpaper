@@ -1,25 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
+using System.Linq;
 using System.Reflection;
-using System.Windows.Forms;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 namespace Wallpapers_Everyday
 {
-    partial class AboutBox : Form
+    /// <summary>
+    /// Логика взаимодействия для AboutWindows.xaml
+    /// </summary>
+    public partial class AboutWindows : Window
     {
-        public AboutBox()
+        public AboutWindows()
         {
             InitializeComponent();
-            this.Text = String.Format("О программе {0}", AssemblyTitle);
-            this.labelProductName.Text = AssemblyProduct;
-            this.labelVersion.Text = String.Format("Версия {0}", AssemblyVersion);
-            this.labelCopyright.Text = AssemblyCopyright;
+            Title = $"О программе {AssemblyTitle}";
+            ProgramTitle.Text = AssemblyProduct;
+            Version.Text = AssemblyVersion;
+            Copyright.Text = AssemblyCopyright;
+            Description.Text = $"{AssemblyDescription}\n\nОбратная связь:\nВКонтакте: vk.com/ivanshkaa\nE-mail: pavlovich.ivan.2000@mail.ru\nСайт: ivanshka.ucoz.net";
         }
 
         #region Методы доступа к атрибутам сборки
-
         public string AssemblyTitle
         {
             get
@@ -83,24 +94,8 @@ namespace Wallpapers_Everyday
                 return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
             }
         }
-
-        public string AssemblyCompany
-        {
-            get
-            {
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
-                if (attributes.Length == 0)
-                {
-                    return "";
-                }
-                return ((AssemblyCompanyAttribute)attributes[0]).Company;
-            }
-        }
         #endregion
 
-        private void okButton_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
+        private void Button_Click(object sender, RoutedEventArgs e) => Close();
     }
 }

@@ -1,0 +1,19 @@
+﻿<Window x:Class="Wallpapers_Everyday.AboutWindows"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Wallpapers_Everyday"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Height="320" Width="450" Icon="Resources/info.png" ResizeMode="NoResize" ShowInTaskbar="False">
+    <Grid>
+        <Image Source="Resources\picture.png" HorizontalAlignment="Left" Width="128" Height="128" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <TextBlock x:Name="ProgramTitle" HorizontalAlignment="Left" Margin="143,10,0,0" TextWrapping="Wrap" Text="Название продукта" VerticalAlignment="Top"/>
+        <TextBlock x:Name="Version" HorizontalAlignment="Left" Margin="143,31,0,0" TextWrapping="Wrap" Text="Версия" VerticalAlignment="Top"/>
+        <TextBlock x:Name="Copyright" HorizontalAlignment="Left" Margin="143,52,0,0" TextWrapping="Wrap" Text="Авторские права" VerticalAlignment="Top"/>
+        <Button Content="ОК" IsDefault="True" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="75" Click="Button_Click"/>
+        <TextBox x:Name="Description" IsReadOnly="True" HorizontalAlignment="Left" Height="173" Margin="143,73,0,0" TextWrapping="Wrap" Text="Описание" VerticalAlignment="Top" Width="281"/>
+
+    </Grid>
+</Window>

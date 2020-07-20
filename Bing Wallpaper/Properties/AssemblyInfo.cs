@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // Общие сведения об этой сборке предоставляются следующим набором
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
-[assembly: AssemblyTitle("Bing Wallpaper")]
-[assembly: AssemblyDescription("Bing Wallpaper - программа автоматической загрузки и установки обоев с сайта Bing.com")]
+[assembly: AssemblyTitle("Wallpapers Everyday")]
+[assembly: AssemblyDescription("Программа автоматической загрузки и установки обоев с сайта Bing.com")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Bing Wallpaper")]
-[assembly: AssemblyCopyright("© Павлович Иван, 2019")]
+[assembly: AssemblyProduct("Wallpapers Everyday")]
+[assembly: AssemblyCopyright("© Павлович Иван, 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // Можно задать все значения или принять номер сборки и номер редакции по умолчанию.
 // используя "*", как показано ниже:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.5.2.0")]
-[assembly: AssemblyFileVersion("3.5.2.0")]
+[assembly: AssemblyVersion("3.6.0.0")]
+[assembly: AssemblyFileVersion("3.6.0.0")]

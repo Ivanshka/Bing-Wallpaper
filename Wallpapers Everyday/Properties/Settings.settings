@@ -2,19 +2,19 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Wallpapers_Everyday.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="AutoRun" Type="System.Boolean" Scope="User">
+    <Setting Name="Autorun" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="OnlyDown" Type="System.Boolean" Scope="User">
+    <Setting Name="OnlyDownload" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="Notify" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="AlwaysRun" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="MaxMB" Type="System.Int32" Scope="User">
+    <Setting Name="AlwaysSet" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="MaxFolderSize" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">15</Value>
     </Setting>
     <Setting Name="Debug" Type="System.Boolean" Scope="User">
@@ -31,6 +31,9 @@
     </Setting>
     <Setting Name="Win10IntrestingPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">default</Value>
+    </Setting>
+    <Setting Name="RemoveOld" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

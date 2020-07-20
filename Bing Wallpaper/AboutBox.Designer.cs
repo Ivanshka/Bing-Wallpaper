@@ -1,4 +1,4 @@
-﻿namespace Bing_Wallpaper
+﻿namespace Wallpapers_Everyday
 {
     partial class AboutBox
     {
@@ -27,6 +27,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutBox));
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.labelProductName = new System.Windows.Forms.Label();
             this.labelVersion = new System.Windows.Forms.Label();
@@ -113,7 +114,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::Bing_Wallpaper.Properties.Resources.picture;
+            this.pictureBox1.Image = global::Wallpapers_Everyday.Properties.Resources.picture;
             this.pictureBox1.Location = new System.Drawing.Point(3, 3);
             this.pictureBox1.Name = "pictureBox1";
             this.tableLayoutPanel.SetRowSpan(this.pictureBox1, 4);
@@ -131,9 +132,7 @@
             this.textBox1.ReadOnly = true;
             this.textBox1.Size = new System.Drawing.Size(274, 153);
             this.textBox1.TabIndex = 27;
-            this.textBox1.Text = "Bing Wallpaper - программа автоматической загрузки и установки заставок с сайта B" +
-    "ing.com\r\n\r\nОбратная связь:\r\nВКонтакте: vk.com/ivanshkaa\r\nE-mail: pavlovich.ivan." +
-    "2000@mail.ru\r\nСайт: ivanshka.ucoz.net";
+            this.textBox1.Text = resources.GetString("textBox1.Text");
             // 
             // AboutBox
             // 

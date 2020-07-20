@@ -1,4 +1,4 @@
-﻿namespace Bing_Wallpaper
+﻿namespace Wallpapers_Everyday
 {
     partial class SettingsWindow
     {
@@ -35,19 +35,23 @@
             this.pause = new System.Windows.Forms.CheckBox();
             this.notification = new System.Windows.Forms.CheckBox();
             this.num = new System.Windows.Forms.NumericUpDown();
-            this.installAlways = new System.Windows.Forms.CheckBox();
+            this.setAlways = new System.Windows.Forms.CheckBox();
             this.noNotifications = new System.Windows.Forms.CheckBox();
             this.dbg = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.about = new System.Windows.Forms.LinkLabel();
+            this.saveWin10Interesting = new System.Windows.Forms.CheckBox();
+            this.aboutButton = new System.Windows.Forms.Button();
+            this.viewPath = new System.Windows.Forms.Button();
+            this.savePath = new System.Windows.Forms.TextBox();
+            this.saveWin10Intresting = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.num)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::Bing_Wallpaper.Properties.Resources.picture;
-            this.pictureBox1.Location = new System.Drawing.Point(276, 0);
+            this.pictureBox1.Image = global::Wallpapers_Everyday.Properties.Resources.picture;
+            this.pictureBox1.Location = new System.Drawing.Point(284, 0);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(128, 128);
             this.pictureBox1.TabIndex = 0;
@@ -90,15 +94,15 @@
             this.num.Size = new System.Drawing.Size(45, 20);
             this.num.TabIndex = 4;
             // 
-            // installAlways
+            // setAlways
             // 
-            this.installAlways.AutoSize = true;
-            this.installAlways.Location = new System.Drawing.Point(12, 35);
-            this.installAlways.Name = "installAlways";
-            this.installAlways.Size = new System.Drawing.Size(167, 17);
-            this.installAlways.TabIndex = 5;
-            this.installAlways.Text = "Всегда устанавливать обои";
-            this.installAlways.UseVisualStyleBackColor = true;
+            this.setAlways.AutoSize = true;
+            this.setAlways.Location = new System.Drawing.Point(12, 35);
+            this.setAlways.Name = "setAlways";
+            this.setAlways.Size = new System.Drawing.Size(167, 17);
+            this.setAlways.TabIndex = 5;
+            this.setAlways.Text = "Всегда устанавливать обои";
+            this.setAlways.UseVisualStyleBackColor = true;
             // 
             // noNotifications
             // 
@@ -114,33 +118,75 @@
             // 
             this.dbg.AutoSize = true;
             this.dbg.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.dbg.Location = new System.Drawing.Point(170, 12);
+            this.dbg.Location = new System.Drawing.Point(173, 12);
             this.dbg.Name = "dbg";
             this.dbg.Size = new System.Drawing.Size(105, 30);
             this.dbg.TabIndex = 7;
-            this.dbg.Text = "Режим отладки\r\n(запись логов)";
+            this.dbg.Text = "Режим отладки\r\n(логирование)";
             this.dbg.UseVisualStyleBackColor = true;
             // 
-            // about
+            // saveWin10Interesting
             // 
-            this.about.AutoSize = true;
-            this.about.Location = new System.Drawing.Point(303, 131);
-            this.about.Name = "about";
-            this.about.Size = new System.Drawing.Size(75, 13);
-            this.about.TabIndex = 8;
-            this.about.TabStop = true;
-            this.about.Text = "О программе";
-            this.about.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.about_LinkClicked);
+            this.saveWin10Interesting.AutoSize = true;
+            this.saveWin10Interesting.Location = new System.Drawing.Point(12, 140);
+            this.saveWin10Interesting.Name = "saveWin10Interesting";
+            this.saveWin10Interesting.Size = new System.Drawing.Size(256, 30);
+            this.saveWin10Interesting.TabIndex = 9;
+            this.saveWin10Interesting.Text = "Сохранять заставки \"Windows: Интересное\"\r\nв отдельную папку. (Только для Windows " +
+    "10.)";
+            this.saveWin10Interesting.UseVisualStyleBackColor = true;
+            this.saveWin10Interesting.CheckedChanged += new System.EventHandler(this.saveWin10Interesting_CheckedChanged);
+            // 
+            // aboutButton
+            // 
+            this.aboutButton.Location = new System.Drawing.Point(305, 140);
+            this.aboutButton.Name = "aboutButton";
+            this.aboutButton.Size = new System.Drawing.Size(86, 23);
+            this.aboutButton.TabIndex = 10;
+            this.aboutButton.Text = "О программе";
+            this.aboutButton.UseVisualStyleBackColor = true;
+            this.aboutButton.Click += new System.EventHandler(this.aboutButton_Click);
+            // 
+            // viewPath
+            // 
+            this.viewPath.Location = new System.Drawing.Point(327, 174);
+            this.viewPath.Name = "viewPath";
+            this.viewPath.Size = new System.Drawing.Size(75, 23);
+            this.viewPath.TabIndex = 11;
+            this.viewPath.Text = "Обзор";
+            this.viewPath.UseVisualStyleBackColor = true;
+            this.viewPath.Click += new System.EventHandler(this.viewPath_Click);
+            // 
+            // savePath
+            // 
+            this.savePath.Location = new System.Drawing.Point(12, 176);
+            this.savePath.Name = "savePath";
+            this.savePath.Size = new System.Drawing.Size(309, 20);
+            this.savePath.TabIndex = 12;
+            // 
+            // saveWin10Intresting
+            // 
+            this.saveWin10Intresting.Location = new System.Drawing.Point(12, 202);
+            this.saveWin10Intresting.Name = "saveWin10Intresting";
+            this.saveWin10Intresting.Size = new System.Drawing.Size(244, 23);
+            this.saveWin10Intresting.TabIndex = 14;
+            this.saveWin10Intresting.Text = "Сохранить заставки Windows: Интересное";
+            this.saveWin10Intresting.UseVisualStyleBackColor = true;
+            this.saveWin10Intresting.Click += new System.EventHandler(this.saveWin10Intresting_Click);
             // 
             // SettingsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(404, 145);
-            this.Controls.Add(this.about);
+            this.ClientSize = new System.Drawing.Size(414, 235);
+            this.Controls.Add(this.saveWin10Intresting);
+            this.Controls.Add(this.savePath);
+            this.Controls.Add(this.viewPath);
+            this.Controls.Add(this.aboutButton);
+            this.Controls.Add(this.saveWin10Interesting);
             this.Controls.Add(this.dbg);
             this.Controls.Add(this.noNotifications);
-            this.Controls.Add(this.installAlways);
+            this.Controls.Add(this.setAlways);
             this.Controls.Add(this.num);
             this.Controls.Add(this.notification);
             this.Controls.Add(this.pause);
@@ -149,7 +195,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SettingsWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Настройки Bing Wallpaper";
+            this.Text = "Настройки Wallpapers Everyday";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingsWindow_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.num)).EndInit();
@@ -165,10 +211,14 @@
         private System.Windows.Forms.CheckBox pause;
         private System.Windows.Forms.CheckBox notification;
         private System.Windows.Forms.NumericUpDown num;
-        private System.Windows.Forms.CheckBox installAlways;
+        private System.Windows.Forms.CheckBox setAlways;
         private System.Windows.Forms.CheckBox noNotifications;
         private System.Windows.Forms.CheckBox dbg;
         private System.Windows.Forms.ToolTip toolTip1;
-        private System.Windows.Forms.LinkLabel about;
+        private System.Windows.Forms.CheckBox saveWin10Interesting;
+        private System.Windows.Forms.Button aboutButton;
+        private System.Windows.Forms.Button viewPath;
+        private System.Windows.Forms.TextBox savePath;
+        private System.Windows.Forms.Button saveWin10Intresting;
     }
 }

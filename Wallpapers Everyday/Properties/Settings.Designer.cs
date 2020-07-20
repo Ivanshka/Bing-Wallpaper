@@ -26,30 +26,30 @@ namespace Wallpapers_Everyday.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool AutoRun {
+        public bool Autorun {
             get {
-                return ((bool)(this["AutoRun"]));
+                return ((bool)(this["Autorun"]));
             }
             set {
-                this["AutoRun"] = value;
+                this["Autorun"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool OnlyDown {
+        public bool OnlyDownload {
             get {
-                return ((bool)(this["OnlyDown"]));
+                return ((bool)(this["OnlyDownload"]));
             }
             set {
-                this["OnlyDown"] = value;
+                this["OnlyDownload"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool Notify {
             get {
                 return ((bool)(this["Notify"]));
@@ -62,24 +62,24 @@ namespace Wallpapers_Everyday.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool AlwaysRun {
+        public bool AlwaysSet {
             get {
-                return ((bool)(this["AlwaysRun"]));
+                return ((bool)(this["AlwaysSet"]));
             }
             set {
-                this["AlwaysRun"] = value;
+                this["AlwaysSet"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("15")]
-        public int MaxMB {
+        public int MaxFolderSize {
             get {
-                return ((int)(this["MaxMB"]));
+                return ((int)(this["MaxFolderSize"]));
             }
             set {
-                this["MaxMB"] = value;
+                this["MaxFolderSize"] = value;
             }
         }
         
@@ -140,6 +140,18 @@ namespace Wallpapers_Everyday.Properties {
             }
             set {
                 this["Win10IntrestingPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RemoveOld {
+            get {
+                return ((bool)(this["RemoveOld"]));
+            }
+            set {
+                this["RemoveOld"] = value;
             }
         }
     }
