@@ -4,11 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Text;
-using System.Threading.Tasks;
+
 using System.Windows;
+
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -26,10 +28,23 @@ namespace Wallpapers_Everyday
         {
             InitializeComponent();
             LoadsettingsToInterface();
+            /*
+             * План: разбиваем старый код на НОРМАЛЬНЫЕ ЧЕЛОВЕЧЕСКИЕ МЕТОДЫ.
+             * ОДНА ФУНКЦИЯ - ОДНА ЗАДАЧА, БЛЯТЬ
+             * В классе Logic будут специфичные функции логики проги, в том
+             * числе и общая функция установки обоев, которая последовательно
+             * будет выполнять все шаги, отлавливать исключения и вот это вот все.
+             * При запуске проги - проверка на наличие ключа. Есть ключ - в
+             * тихом режиме ставим обои той самой общей функцией в зависимости
+             * от настроек проги - и все. Нет ключа - открываем окно с настройками.
+             * 
+             */
+
         }
+        int i = 0;
 
         private void Button_Click(object sender, RoutedEventArgs e) => new AboutWindows().ShowDialog();
-
+        
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) => SaveSettingsFromInterface();
         
         void SaveSettingsFromInterface()
@@ -81,7 +96,7 @@ namespace Wallpapers_Everyday
                 saveWin10InterestingRun.IsEnabled = false;
             }
             if (Properties.Settings.Default.Win10IntrestingPath == "default")
-                Properties.Settings.Default.Win10IntrestingPath = Application.Current.StartupUri + "\\Login backgrounds";
+                Properties.Settings.Default.Win10IntrestingPath = System.Windows.Application.Current.StartupUri + "\\Login backgrounds";
 
             saveWin10InterestingPath.DirectoryPath = Properties.Settings.Default.Win10IntrestingPath;
 

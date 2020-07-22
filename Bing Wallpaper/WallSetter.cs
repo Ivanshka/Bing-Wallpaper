@@ -48,7 +48,7 @@ namespace Wallpapers_Everyday
                 while (count > 0);
                 Vars.HTMLCode = sb.ToString();
             }
-            catch(Exception e) { Vars.Debug("Ошибка:\n" + e.Message); }
+            catch (Exception e) { Vars.Debug("Ошибка:\n" + e.Message); }
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace Wallpapers_Everyday
                         Vars.Debug("Файл загружен: " + Vars.OriginalName);
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     // то уведомляем
                     Start.tray.BalloonTipText = "Ошибка загрузки обоев! Попробуйте позже.\nЗавершение работы...";
@@ -205,7 +205,7 @@ namespace Wallpapers_Everyday
                 Thread.Sleep(3000);
                 Application.Exit();
             }
-            
+
             // обрезаем ".jpg", добавляем ".bmp" и сохраняем в новом формате
             Vars.OriginalName = Vars.OriginalName.Remove(Vars.OriginalName.Length - 4) + ".bmp";
             img.Save(Vars.FullExePath + "\\images\\" + Vars.OriginalName, ImageFormat.Bmp);
