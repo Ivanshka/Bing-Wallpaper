@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Management;
@@ -17,6 +18,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using Hardcodet.Wpf.TaskbarNotification;
+
 namespace Wallpapers_Everyday
 {
     /// <summary>
@@ -24,12 +27,21 @@ namespace Wallpapers_Everyday
     /// </summary>
     public partial class MainWindow : Window
     {
+        public TaskbarIcon TrayIcon;
+
         public MainWindow()
         {
             InitializeComponent();
-            LoadsettingsToInterface();
+
+            TrayIcon = new TaskbarIcon();
+            TrayIcon.Icon = new Icon(Properties.Resources.trayIcon, 16, 16);
+            TrayIcon.Visibility = Visibility.Visible;
+            TrayIcon.ToolTipText = "Wallpapers Everyday";
+
+            LoadSettingsToInterface();
+
             /*
-             * План: разбиваем старый код на НОРМАЛЬНЫЕ ЧЕЛОВЕЧЕСКИЕ МЕТОДЫ.
+             * План: разбиваем старый код на НОРМАЛЬНЫЕ ЧЕЛОВЕЧЕСКИЕ МЕТОДЫ .
              * ОДНА ФУНКЦИЯ - ОДНА ЗАДАЧА, БЛЯТЬ
              * В классе Logic будут специфичные функции логики проги, в том
              * числе и общая функция установки обоев, которая последовательно
@@ -39,12 +51,9 @@ namespace Wallpapers_Everyday
              * от настроек проги - и все. Нет ключа - открываем окно с настройками.
              * 
              */
-
         }
-        int i = 0;
 
         private void Button_Click(object sender, RoutedEventArgs e) => new AboutWindows().ShowDialog();
-        
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) => SaveSettingsFromInterface();
         
         void SaveSettingsFromInterface()
@@ -63,7 +72,7 @@ namespace Wallpapers_Everyday
             Properties.Settings.Default.Save();
         }
 
-        void LoadsettingsToInterface()
+        void LoadSettingsToInterface()
         {
             autorun.IsChecked = Properties.Settings.Default.Autorun;
             debug.IsChecked = Properties.Settings.Default.Debug;
@@ -96,7 +105,7 @@ namespace Wallpapers_Everyday
                 saveWin10InterestingRun.IsEnabled = false;
             }
             if (Properties.Settings.Default.Win10IntrestingPath == "default")
-                Properties.Settings.Default.Win10IntrestingPath = System.Windows.Application.Current.StartupUri + "\\Login backgrounds";
+                Properties.Settings.Default.Win10IntrestingPath = Directory.GetCurrentDirectory() + "\\Login backgrounds";
 
             saveWin10InterestingPath.DirectoryPath = Properties.Settings.Default.Win10IntrestingPath;
 
