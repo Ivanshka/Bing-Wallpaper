@@ -97,7 +97,7 @@ namespace Wallpapers_Everyday
                         Wallpaper.SetWallpaper(workDirectory + "\\images\\" + Properties.Settings.Default.Name);
                         string notification = "Отсутствует соединение с интернетом! Были поставлены последние обои.";
 
-                        imagesSize = GetDirectorySize(workDirectory + "\\images");
+                        imagesSize = WorkWithSystem.GetDirectorySize(workDirectory + "\\images");
                         if (Properties.Settings.Default.Notify && imagesSize > Properties.Settings.Default.MaxFolderSize)
                             notification += $"\nРазмер папки с обоями превышает рекомендуемый! ({imagesSize} MB)";
                         return (FinishCode.Error, notification);
@@ -196,7 +196,7 @@ namespace Wallpapers_Everyday
             }
 
             // если нужно, удаляем старые обои, пока не войдем в указанный предел
-            imagesSize = GetDirectorySize(workDirectory + "\\images");
+            imagesSize = WorkWithSystem.GetDirectorySize(workDirectory + "\\images");
             if (imagesSize > Properties.Settings.Default.MaxFolderSize && Properties.Settings.Default.RemoveOld)
             {
                 FileInfo[] files = new DirectoryInfo(workDirectory + "\\images").GetFiles().OrderBy(f => f.LastWriteTime).ToArray();
@@ -230,23 +230,5 @@ namespace Wallpapers_Everyday
         /// <param name="url">URL для выделения имени.</param>
         /// <returns>Имя файла для сохранения.</returns>
         static string SelectNameFromUrl(string url) => url.Substring(7, url.IndexOf(".jpg") - 6 + 3); // +3 из-за расширения
-
-        /// <summary>
-        /// Вычисляет размер папки с обоями
-        /// </summary>
-        /// <param name="folderPath">Папка для вычисления размера</param>
-        /// <returns>Размер папки в мегабайтах</returns>
-        static int GetDirectorySize(string folderPath)
-        {
-            string[] files = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories);
-            long sum = 0;
-            for (int i = 0; i < files.Length; i++)
-            {
-                FileInfo fi = new FileInfo(files[i]);
-                sum += fi.Length;
-            }
-
-            return (int)(sum / 1024 / 1024);
-        }
     }
 }

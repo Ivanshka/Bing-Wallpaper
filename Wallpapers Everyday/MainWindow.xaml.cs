@@ -47,6 +47,7 @@ namespace Wallpapers_Everyday
         void SaveSettingsFromInterface()
         {
             Properties.Settings.Default.Autorun = autorun.IsChecked.Value;
+            WorkWithSystem.AutorunControl(Wallpapers_Everyday.Properties.Settings.Default.Autorun, Assembly.GetExecutingAssembly().Location, "Wallpapers Everyday", "-autorun");
             Properties.Settings.Default.Debug = debug.IsChecked.Value;
             Properties.Settings.Default.AlwaysSet = alwaysSet.IsChecked.Value;
             Properties.Settings.Default.OnlyDownload = onlyDownload.IsChecked.Value;
@@ -62,7 +63,6 @@ namespace Wallpapers_Everyday
         void LoadSettingsToInterface()
         {
             autorun.IsChecked = Properties.Settings.Default.Autorun;
-            AutorunControl(Properties.Settings.Default.Autorun);
             debug.IsChecked = Properties.Settings.Default.Debug;
             alwaysSet.IsChecked = Properties.Settings.Default.AlwaysSet;
             onlyDownload.IsChecked = Properties.Settings.Default.OnlyDownload;
@@ -101,43 +101,6 @@ namespace Wallpapers_Everyday
                 var name = (from x in new ManagementObjectSearcher("SELECT Caption FROM Win32_OperatingSystem").Get().Cast<ManagementObject>()
                             select x.GetPropertyValue("Caption")).FirstOrDefault();
                 return name != null ? name.ToString() : "Неизвестно";
-            }
-        }
-
-        /// <summary>
-        /// Управляет автозагрузкой программы.
-        /// </summary>
-        /// <param name="mode">Устанавливает значение: "true" - включить автозагрузку, "false" - выключить</param>
-        private static void AutorunControl(bool mode)
-        {
-            string ExePath = Assembly.GetExecutingAssembly().Location + " -autorun";
-            RegistryKey reg = Registry.CurrentUser.CreateSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\");
-
-            // правим путь к файлу
-            ExePath = ExePath.Replace("/", "\\");
-
-            if (mode) // если ВКЛЮЧАЕМ автозагрузку
-            {
-                try
-                {
-                    // делаем запись в реестр
-                    reg.SetValue("Wallpapers Everyday", ExePath);
-                    return;
-                }
-                catch
-                {
-                    MessageBox.Show("Не удалось добавить Wallpapers Everyday в автозагрузку! Автоматическая смена обоев работать не будет.", "Wallpapers Everyday", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-            }
-            else // если ВЫКЛЮЧАЕМ автозагрузку
-            {
-                try
-                {
-                    reg.DeleteValue("Wallpapers Everyday");
-                    return;
-                }
-                catch { }
             }
         }
 

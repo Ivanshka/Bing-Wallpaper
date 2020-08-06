@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Windows;
 
@@ -30,6 +31,9 @@ namespace Wallpapers_Everyday
                 icon.Icon = new Icon(Wallpapers_Everyday.Properties.Resources.trayIcon, 16, 16);
                 icon.Visibility = Visibility.Visible;
                 icon.ToolTipText = "Wallpapers Everyday";
+
+                // на случай, если прога была в автозапуске, но ее переместили и запустили в тихом режиме, нужно подправить запись
+                WorkWithSystem.AutorunControl(Wallpapers_Everyday.Properties.Settings.Default.Autorun, Assembly.GetExecutingAssembly().Location, "Wallpapers Everyday", "-autorun");
 
                 // заглушка для успешного завершения программы, без окна и App.Cur.Shutdown() прога не закроется и будет висеть в озу
                 Window win = new Window();
