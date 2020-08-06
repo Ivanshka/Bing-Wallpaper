@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Hardcodet.Wpf.TaskbarNotification;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 
 namespace Wallpapers_Everyday
@@ -14,12 +17,35 @@ namespace Wallpapers_Everyday
     {
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            RunOnlyOne.ChekRunProgram("Wallpaper Everyday for you!");
+            if (RunOnlyOne.ChekRunProgram("Wallpapers Everyday for you!"))
+            {
+                Window win = new Window();
+                Application.Current.MainWindow = win;
+                Application.Current.Shutdown();
+            }
+
             if (e.Args.Length > 0)
             {
-                MainWindow win = new MainWindow();
+                TaskbarIcon icon = new TaskbarIcon();
+                icon.Icon = new Icon(Wallpapers_Everyday.Properties.Resources.trayIcon, 16, 16);
+                icon.Visibility = Visibility.Visible;
+                icon.ToolTipText = "Wallpapers Everyday";
+
+                // заглушка для успешного завершения программы, без окна и App.Cur.Shutdown() прога не закроется и будет висеть в озу
+                Window win = new Window();
                 Application.Current.MainWindow = win;
-                Logic.Work(win, true);
+
+                var state = Logic.Work();
+                switch (state.Item1)
+                {
+                    case Logic.FinishCode.Good: break;
+                    case Logic.FinishCode.Warning: icon.ShowBalloonTip("Wallpapers Everyday", state.Item2, BalloonIcon.Info); break;
+                    case Logic.FinishCode.Error: icon.ShowBalloonTip("Wallpapers Everyday", state.Item2, BalloonIcon.Error); break;
+                    case Logic.FinishCode.Fail: MessageBox.Show(state.Item2, "Wallpapers Everyday", MessageBoxButton.OK, MessageBoxImage.Error); break;
+                }
+
+                Thread.Sleep(5000);
+                icon.Visibility = Visibility.Hidden;
                 Application.Current.Shutdown();
             }
             else

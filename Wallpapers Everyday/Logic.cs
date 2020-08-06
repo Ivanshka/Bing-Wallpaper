@@ -3,16 +3,39 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading;
 using System.Windows;
-
+using System.Windows.Forms.PropertyGridInternal;
 using Hardcodet.Wpf.TaskbarNotification;
 
 namespace Wallpapers_Everyday
 {
     public static class Logic
     {
+        /// <summary>
+        /// Код завершения работы функции
+        /// </summary>
+        public enum FinishCode {
+            /// <summary>
+            /// Успешное завершение работы функции
+            /// </summary>
+            Good,
+            /// <summary>
+            /// Успешное завершение работы функции, но есть предупреждение
+            /// </summary>
+            Warning,
+            /// <summary>
+            /// Ошибка в работе функции
+            /// </summary>
+            Error,
+            /// <summary>
+            /// Отказ работы
+            /// </summary>
+            Fail
+        }
+
         /// <summary>
         /// Метод получения ссылки из HTML-кода страницы.
         /// </summary>
@@ -38,41 +61,23 @@ namespace Wallpapers_Everyday
         /// <summary>
         /// Логический метод установки обоев. Выполняет все требуемые шаги (получение кода, выделение ссылки и т.д.), требуемые для установки свежих обоев.
         /// </summary>
-        /// <param name="win">окно, содержащее иконку; окно требуется для обработки событий иконки, в иконку будет помещаться информация</param>
-        /// <param name="hide">Флаг, обозначающий, требуется ли скрывать окно при работе. Должен принять значение true, если передано "new MainWindow()"</param>
-        public static void Work(MainWindow win, bool hide)
+        /// <returns>Код завершения функции и сопровождающее сообщение.</returns>
+        public static (FinishCode, string) Work()
         {
-            /*NotifyIcon win.TrayIcon = new NotifyIcon();
-            win.TrayIcon.Icon = new Icon(Properties.Resources.icon, 16, 16);
-            win.TrayIcon.Text = "Wallpapers Everyday";
-            win.TrayIcon.BalloonTipIcon = ToolTipIcon.Info;
-            win.TrayIcon.BalloonTipTitle = "Wallpapers Everyday";
-            win.TrayIcon.Visible = true;*/
-
-            //MessageBox.Show("Начало теста");
-
-            Logs.WriteLogFile($@"{DateTime.Now}: запуск...");
-            if (hide)
-            {
-                win.WindowState = WindowState.Minimized;
-                win.Show();
-            }
-
-            win.TrayIcon.ToolTipText = "Проверка параметров...";
+            if (Properties.Settings.Default.Debug)
+                Logs.WriteLogFile($"\n\n\n\n\n[{DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss")}]: запуск...");
 
             var size = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Size;
             // исключаем старые маленькие разрешения и неподдерживаемое 5 : 4
-            if ((size.Width < 1366 && size.Height < 768) || (size.Width == 1280 && size.Height == 1024))
+            if ((size.Width < 1280 && size.Height < 720) || (size.Width == 1280 && size.Height == 1024))
             {
-                MessageBox.Show("К сожалению, Ваше разрешение экрана не поддерживается!", "Wallpapers Everyday", MessageBoxButton.OK, MessageBoxImage.Stop);
-                return;
+                return (FinishCode.Fail, "К сожалению, Ваше разрешение экрана слишком мало или не поддерживается!");
             }
 
             string workDirectory = Directory.GetCurrentDirectory();
             // если папки для заставок нет, создаем ее
             Directory.CreateDirectory(workDirectory + @"\images");
-            int imagesSize = GetDirectorySize(workDirectory + "\\images");
-            string originalName;
+            int imagesSize;
             // ===============================================================
             // ===============================================================
             // ===============================================================
@@ -84,55 +89,26 @@ namespace Wallpapers_Everyday
                 if ((Properties.Settings.Default.AlwaysSet) && (!Properties.Settings.Default.OnlyDownload))
                 {
                     // то проверяем, первый ли запуск. и если не первый (т.е. уже есть какой-то скачанный файл)
-                    string[] images = Directory.GetFiles(@"\Images").OrderBy(f => File.GetCreationTime(f)).ToArray(); // получаем список пикч упорядоченный по дате создания 
-                    if (images.Length > 0)
+                    if (Properties.Settings.Default.Name != "no")
                     {
-                        Logs.WriteLogFile("Доступа к Интернету нет. Ставлю последние обои...");
+                        if (Properties.Settings.Default.Debug)
+                            Logs.WriteLogFile("Доступа к Интернету нет. Ставлю последние обои...");
                         // то ставим последнюю обоину
-                        originalName = images[0];
-                        win.TrayIcon.ShowBalloonTip("Wallpapers Everyday", "Отсутствует соединение с интернетом.\nСтавлю последние обои.", BalloonIcon.Error);
-                        Wallpaper.SetWallpaper(originalName);
+                        Wallpaper.SetWallpaper(workDirectory + "\\images\\" + Properties.Settings.Default.Name);
+                        string notification = "Отсутствует соединение с интернетом! Были поставлены последние обои.";
 
-                        if (imagesSize > Properties.Settings.Default.MaxFolderSize && !Properties.Settings.Default.NoNotify)
-                            win.TrayIcon.ShowBalloonTip("Wallpapers Everyday", $"Размер папки с обоями превышает рекомендуемый! ({imagesSize} MB)", BalloonIcon.Warning);
-
-                        // сохраняем настройки
-                        Properties.Settings.Default.Save();
-
-                        if (hide)
-                        {
-                            Thread.Sleep(3000);
-                            win.TrayIcon.Visibility = Visibility.Hidden;
-                            Application.Current.Shutdown();
-                        }
+                        imagesSize = GetDirectorySize(workDirectory + "\\images");
+                        if (Properties.Settings.Default.Notify && imagesSize > Properties.Settings.Default.MaxFolderSize)
+                            notification += $"\nРазмер папки с обоями превышает рекомендуемый! ({imagesSize} MB)";
+                        return (FinishCode.Error, notification);
                     }
-                    else
-                    {
-                        // если же первый
-                        win.TrayIcon.ShowBalloonTip("Wallpapers Everyday", "Отсутствует соединение с интернетом!", BalloonIcon.Error);
-                        if (hide)
-                        {
-                            Thread.Sleep(3000);
-                            win.TrayIcon.Visibility = Visibility.Hidden;
-                            Application.Current.Shutdown();
-                        }
-                        return;
-                    }
+                    else // если же первый
+                        return (FinishCode.Error, "Отсутствует соединение с интернетом!");
                 }
                 else // если же нет "постоянного обновления" или есть "только загрузка"
-                {
-                    win.TrayIcon.ShowBalloonTip("Wallpapers Everyday", "Отсутствует соединение с интернетом!", BalloonIcon.Error);
-                    if (hide)
-                    {
-                        Thread.Sleep(3000);
-                        win.TrayIcon.Visibility = Visibility.Hidden;
-                        Application.Current.Shutdown();
-                    }
-                }
+                    return (FinishCode.Error, "Отсутствует соединение с интернетом!");
             }
 
-            // если "только загрузка" - только загружаем
-            win.TrayIcon.ToolTipText = "Получение кода...";
             if (Properties.Settings.Default.Debug)
                 Logs.WriteLogFile("Получение кода...");
 
@@ -143,108 +119,109 @@ namespace Wallpapers_Everyday
             }
             catch (Exception e)
             {
-                Logs.WriteLogFile($"Исключение: {e.Message}\nВнутреннее исключение: {e.InnerException.Message}");
-                win.TrayIcon.ShowBalloonTip("Wallpapers Everyday", "В ходе работы произошла ошибка!\nПодробности в логе.", BalloonIcon.Error);
-                if (hide)
-                {
-                    Thread.Sleep(3000);
-                    win.TrayIcon.Visibility = Visibility.Hidden;
-                    Application.Current.Shutdown();
-                }
+                if (Properties.Settings.Default.Debug)
+                    Logs.WriteLogFile($"Исключение: {e.Message}\nВнутреннее исключение: {e.InnerException.Message}");
+                return (FinishCode.Error, "В ходе работы произошла ошибка!\nПодробности в логе.");
             }
-            
-            Logs.WriteLogFile("Код получен:");
-            Logs.WriteLogFile(temp);
 
-            win.TrayIcon.ToolTipText = "Выделение ссылки...";
             if (Properties.Settings.Default.Debug)
-                Logs.WriteLogFile("Выделение ссылки...");
+                Logs.WriteLogFile($"Код получен:\n{temp}\nВыделение ссылки...");
 
+            string url;
             try
             {
-                temp = SelectUrlFromHtml(temp);
+                url = temp = SelectUrlFromHtml(temp);
             }
             catch (Exception e)
             {
-                Logs.WriteLogFile($"Исключение: {e.Message}\nВнутреннее исключение: {e.InnerException.Message}");
-                win.TrayIcon.ShowBalloonTip("Wallpapers Everyday", "В ходе работы произошла ошибка!\nПодробности в логе.", BalloonIcon.Error);
-                if (hide)
-                {
-                    Thread.Sleep(3000);
-                    win.TrayIcon.Visibility = Visibility.Hidden;
-                    Application.Current.Shutdown();
-                }
+                if (Properties.Settings.Default.Debug)
+                    Logs.WriteLogFile($"Исключение: {e.Message}\nВнутреннее исключение: {e.InnerException.Message}");
+                return (FinishCode.Error, "В ходе работы произошла ошибка!\nПодробности в логе.");
             }
 
             if (Properties.Settings.Default.Debug)
+                Logs.WriteLogFile($"Ссылка выделена:\n{temp}");
+
+            temp = SelectNameFromUrl(temp);
+            if (Properties.Settings.Default.Name == temp)
             {
-                Logs.WriteLogFile("Ссылка выделена:");
-                Logs.WriteLogFile(temp);
+                string notification = "Новых обоев пока нет!";
+                if (Properties.Settings.Default.AlwaysSet)
+                {
+                    Wallpaper.SetWallpaper($@"{workDirectory}\images\{temp}");
+                    notification += " Были поставлены последние обои.";
+                }
+                if (Properties.Settings.Default.Debug)
+                    Logs.WriteLogFile(notification);
+
+                return (FinishCode.Warning, notification);
             }
 
-            win.TrayIcon.ToolTipText = "Загрузка обоев...";
             if (Properties.Settings.Default.Debug)
                 Logs.WriteLogFile("Загрузка обоев...");
 
-            string name = null;
-
             try
             {
-                Web.Download("https://www.bing.com" + temp, $@"{workDirectory}\images\{name = SelectNameFromUrl(temp)}");
+                Web.Download("https://www.bing.com" + url, $@"{workDirectory}\images\{Properties.Settings.Default.Name = temp}");
+                
+                if (Properties.Settings.Default.Debug)
+                    Logs.WriteLogFile($"Обои загружены: {Properties.Settings.Default.Name}");
             }
             catch (Exception e)
             {
-                if (e.InnerException != null)
-                    Logs.WriteLogFile($"Исключение: {e.Message}\nВнутреннее исключение: {e.InnerException.Message}");
-                else
-                    Logs.WriteLogFile($"Исключение: {e.Message}");
-                win.TrayIcon.ShowBalloonTip("Wallpapers Everyday", "В ходе работы произошла ошибка!\nПодробности в логе.", BalloonIcon.Error);
-                if (hide)
-                {
-                    Thread.Sleep(3000);
-                    win.TrayIcon.Visibility = Visibility.Hidden;
-                    return;
-                }
+                if (Properties.Settings.Default.Debug)
+                    if (e.InnerException != null)
+                        Logs.WriteLogFile($"Исключение: {e.Message}\nВнутреннее исключение: {e.InnerException.Message}");
+                    else
+                        Logs.WriteLogFile($"Исключение: {e.Message}");
+                return (FinishCode.Error, "В ходе работы произошла ошибка!\nПодробности в логе.");
             }
 
-            // если нет - еще и обои ставим
+            Properties.Settings.Default.InstalledWallpaperIndex++; // новые обои попадают в начало - сдвигаем индекс, чтобы он оставался на том же файле в массиве при переключении
+            
+            // если нужно, ставим обои
             if (!Properties.Settings.Default.OnlyDownload)
             {
-                win.TrayIcon.ToolTipText = "Установка обоев...";
-                Wallpaper.SetWallpaper($@"{workDirectory}\images\{name}");
+                Wallpaper.SetWallpaper($@"{workDirectory}\images\{Properties.Settings.Default.Name}");
+                Properties.Settings.Default.InstalledWallpaperIndex = 0;
             }
 
-            if (Properties.Settings.Default.Debug)
-                Logs.WriteLogFile($"Вес папки с обоями: {imagesSize} Mb");
+            // сохраняем новые параметры
+            Properties.Settings.Default.Save();
 
             if (Properties.Settings.Default.Win10Intresting)
             {
-                win.TrayIcon.ToolTipText = "Сохранение фонов экрана блокировки...";
                 Wallpaper.SaveWin10Interesting(Properties.Settings.Default.Win10IntrestingPath);
-                GC.Collect(); // после сохранения WE жрет ОЧЕНЬ много памяти, большая часть которой ему уже нах не нужна => очищаем
+                GC.Collect(); // после сохранения WE жрет ОЧЕНЬ много памяти из-за хэширования, но теперь ему столько памяти не нужно
             }
 
-            if (!Properties.Settings.Default.NoNotify)
+            // если нужно, удаляем старые обои, пока не войдем в указанный предел
+            imagesSize = GetDirectorySize(workDirectory + "\\images");
+            if (imagesSize > Properties.Settings.Default.MaxFolderSize && Properties.Settings.Default.RemoveOld)
             {
-                win.TrayIcon.ToolTipText = "Wallpapers Everyday";
-
-                if (imagesSize > Properties.Settings.Default.MaxFolderSize)
-                    win.TrayIcon.ShowBalloonTip("Wallpapers Everyday", $"Размер папки с обоями превышает рекомендуемый! ({imagesSize} MB)", BalloonIcon.Warning);
-                if (hide)
+                FileInfo[] files = new DirectoryInfo(workDirectory + "\\images").GetFiles().OrderBy(f => f.LastWriteTime).ToArray();
+                MessageBox.Show($"1 - {files[0].CreationTime}; -1 - {files[files.Length-1].CreationTime}");
+                while (imagesSize > Properties.Settings.Default.MaxFolderSize)
                 {
-                    Thread.Sleep(3000);
-                    win.TrayIcon.Visibility = Visibility.Hidden;
-                    return;
+                    int i = 0;
+                    imagesSize -= (int)(files[i].Length / 1048576); // переводим в MB
+                    files[i].Delete();
+                    i++;
                 }
+                return (FinishCode.Warning, $"Старые обои были удалены! ({imagesSize} MB)");
             }
 
-            // ===============================================================
-            // ===============================================================
-            // ===============================================================
-            //MessageBox.Show("Конец теста");
-            win.TrayIcon.Visibility = Visibility.Hidden;
+            // если нужно, уведомляем
+            if (Properties.Settings.Default.Notify)
+            {
+                
+                if (Properties.Settings.Default.Debug)
+                    Logs.WriteLogFile($"Вес папки с обоями: {imagesSize} Mb");
+                if (imagesSize > Properties.Settings.Default.MaxFolderSize)
+                    return (FinishCode.Warning, $"Размер папки с обоями превышает установленную границу! ({imagesSize} MB)");
+            }
 
-            return;
+            return (FinishCode.Good, "");
         }
 
         /// <summary>
@@ -255,9 +232,9 @@ namespace Wallpapers_Everyday
         static string SelectNameFromUrl(string url) => url.Substring(7, url.IndexOf(".jpg") - 6 + 3); // +3 из-за расширения
 
         /// <summary>
-        /// Вычисляет объем папки с обоями
+        /// Вычисляет размер папки с обоями
         /// </summary>
-        /// <param name="folderPath"></param>
+        /// <param name="folderPath">Папка для вычисления размера</param>
         /// <returns>Размер папки в мегабайтах</returns>
         static int GetDirectorySize(string folderPath)
         {

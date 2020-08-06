@@ -31,30 +31,26 @@ namespace Wallpapers_Everyday
         public static void SetWallpaper(string fullpath) => SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, fullpath, SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
 
         /// <summary>
-        /// Сохраняет заставки экрана блокировки. Если картинка имеет высоту > 1080, то она считается заставкой.
+        /// Сохраняет заставки экрана блокировки. Если картинка имеет ширину > 1080, то она считается заставкой.
         /// P.S.
         /// </summary>
         /// <param name="savePath">Путь к папке сохранения</param>
         public static void SaveWin10Interesting(string savePath)
         {
-            // локальная функция для высчитывания хэша файла. нужна для определения, был файл или нет
-            string GetSHA512ofFile(string path)
-            {
-                using (FileStream fs = File.OpenRead(path))
-                {
-                    SHA512 sha512 = new SHA512Managed();
-                    byte[] fileData = new byte[fs.Length];
-                    fs.Read(fileData, 0, (int)fs.Length);
-                    byte[] checkSum = sha512.ComputeHash(fileData);
-                    return BitConverter.ToString(checkSum).Replace("-", string.Empty);
-                }
-            }
-
             Directory.CreateDirectory(savePath);
+
             var have = Directory.GetFiles(savePath);
-            List<string> hashes = new List<string>(have.Length);
+            string[] hashes = new string[have.Length];
+            SHA512 sha512 = new SHA512Managed();
+
+            byte[] fileData;
             for (int i = 0; i < have.Length; i++)
-                hashes.Add(GetSHA512ofFile(have[i]));
+            {
+                FileStream fs = File.OpenRead(have[i]);
+                fileData = new byte[fs.Length];
+                fs.Read(fileData, 0, (int)fs.Length);
+                hashes[i] = BitConverter.ToString(sha512.ComputeHash(fileData));
+            }    
 
             string[] files = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Packages\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\LocalState\Assets");
             int count = 0;
@@ -67,11 +63,14 @@ namespace Wallpapers_Everyday
                 Console.Write(temp.Width);
                 if (temp.Width > 1080) // если это не мобилкина обоина
                 {
-                    string sha512 = GetSHA512ofFile(files[i]);
-                    if (!hashes.Contains(sha512)) // если файла еще не было
+                    FileStream fs = File.OpenRead(files[i]);
+                    fileData = new byte[fs.Length];
+                    fs.Read(fileData, 0, (int)fs.Length);
+
+                    string hash = BitConverter.ToString(sha512.ComputeHash(fileData));
+                    if (!hashes.Contains(hash)) // если файла еще не было
                     {
                         temp.Save($@"{savePath}\{startCount + count + 1}.jpg", ImageFormat.Jpeg);
-                        //hashes.Add(sha512);
                         count++;
                     }
                 }

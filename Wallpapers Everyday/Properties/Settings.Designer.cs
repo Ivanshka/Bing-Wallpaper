@@ -110,18 +110,6 @@ namespace Wallpapers_Everyday.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool NoNotify {
-            get {
-                return ((bool)(this["NoNotify"]));
-            }
-            set {
-                this["NoNotify"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool Win10Intresting {
             get {
                 return ((bool)(this["Win10Intresting"]));
@@ -152,6 +140,18 @@ namespace Wallpapers_Everyday.Properties {
             }
             set {
                 this["RemoveOld"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int InstalledWallpaperIndex {
+            get {
+                return ((int)(this["InstalledWallpaperIndex"]));
+            }
+            set {
+                this["InstalledWallpaperIndex"] = value;
             }
         }
     }

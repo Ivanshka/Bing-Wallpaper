@@ -23,9 +23,6 @@
     <Setting Name="Name" Type="System.String" Scope="User">
       <Value Profile="(Default)">no</Value>
     </Setting>
-    <Setting Name="NoNotify" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
     <Setting Name="Win10Intresting" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
@@ -34,6 +31,9 @@
     </Setting>
     <Setting Name="RemoveOld" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="InstalledWallpaperIndex" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>

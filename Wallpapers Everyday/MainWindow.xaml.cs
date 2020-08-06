@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Management;
+using System.Reflection;
 using System.Text;
-
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -19,6 +22,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using Hardcodet.Wpf.TaskbarNotification;
+using Microsoft.Win32;
 
 namespace Wallpapers_Everyday
 {
@@ -27,34 +31,19 @@ namespace Wallpapers_Everyday
     /// </summary>
     public partial class MainWindow : Window
     {
-        public TaskbarIcon TrayIcon;
+        TaskbarIcon icon = new TaskbarIcon();
 
         public MainWindow()
         {
             InitializeComponent();
-
-            TrayIcon = new TaskbarIcon();
-            TrayIcon.Icon = new Icon(Properties.Resources.trayIcon, 16, 16);
-            TrayIcon.Visibility = Visibility.Visible;
-            TrayIcon.ToolTipText = "Wallpapers Everyday";
-
+            icon.Icon = new Icon(Properties.Resources.trayIcon, 16, 16);
+            icon.ToolTipText = "Wallpapers Everyday";
+            icon.Visibility = Visibility.Visible;
             LoadSettingsToInterface();
-
-            /*
-             * План: разбиваем старый код на НОРМАЛЬНЫЕ ЧЕЛОВЕЧЕСКИЕ МЕТОДЫ .
-             * ОДНА ФУНКЦИЯ - ОДНА ЗАДАЧА, БЛЯТЬ
-             * В классе Logic будут специфичные функции логики проги, в том
-             * числе и общая функция установки обоев, которая последовательно
-             * будет выполнять все шаги, отлавливать исключения и вот это вот все.
-             * При запуске проги - проверка на наличие ключа. Есть ключ - в
-             * тихом режиме ставим обои той самой общей функцией в зависимости
-             * от настроек проги - и все. Нет ключа - открываем окно с настройками.
-             * 
-             */
+            icon.ShowBalloonTip("Wallpapers Everyday", "Нстройки применяются только после закрытия окна!", BalloonIcon.Info);
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e) => new AboutWindows().ShowDialog();
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) => SaveSettingsFromInterface();
+        private void Window_Closing(object sender, CancelEventArgs e) { icon.Visibility = Visibility.Hidden; SaveSettingsFromInterface(); }
         
         void SaveSettingsFromInterface()
         {
@@ -62,7 +51,6 @@ namespace Wallpapers_Everyday
             Properties.Settings.Default.Debug = debug.IsChecked.Value;
             Properties.Settings.Default.AlwaysSet = alwaysSet.IsChecked.Value;
             Properties.Settings.Default.OnlyDownload = onlyDownload.IsChecked.Value;
-            Properties.Settings.Default.NoNotify = withoutNotify.IsChecked.Value;
             Properties.Settings.Default.Notify = bigFolderNotify.IsChecked.Value;
             Properties.Settings.Default.MaxFolderSize = bigFolderSize.Value;
             Properties.Settings.Default.RemoveOld = autoRemoveOldPictures.IsChecked.Value;
@@ -75,10 +63,10 @@ namespace Wallpapers_Everyday
         void LoadSettingsToInterface()
         {
             autorun.IsChecked = Properties.Settings.Default.Autorun;
+            AutorunControl(Properties.Settings.Default.Autorun);
             debug.IsChecked = Properties.Settings.Default.Debug;
             alwaysSet.IsChecked = Properties.Settings.Default.AlwaysSet;
             onlyDownload.IsChecked = Properties.Settings.Default.OnlyDownload;
-            withoutNotify.IsChecked = Properties.Settings.Default.NoNotify;
             bigFolderNotify.IsChecked = Properties.Settings.Default.Notify;
             bigFolderSize.Value = Properties.Settings.Default.MaxFolderSize;
             autoRemoveOldPictures.IsChecked = Properties.Settings.Default.RemoveOld;
@@ -117,6 +105,43 @@ namespace Wallpapers_Everyday
             }
         }
 
+        /// <summary>
+        /// Управляет автозагрузкой программы.
+        /// </summary>
+        /// <param name="mode">Устанавливает значение: "true" - включить автозагрузку, "false" - выключить</param>
+        private static void AutorunControl(bool mode)
+        {
+            string ExePath = Assembly.GetExecutingAssembly().Location + " -autorun";
+            RegistryKey reg = Registry.CurrentUser.CreateSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\");
+
+            // правим путь к файлу
+            ExePath = ExePath.Replace("/", "\\");
+
+            if (mode) // если ВКЛЮЧАЕМ автозагрузку
+            {
+                try
+                {
+                    // делаем запись в реестр
+                    reg.SetValue("Wallpapers Everyday", ExePath);
+                    return;
+                }
+                catch
+                {
+                    MessageBox.Show("Не удалось добавить Wallpapers Everyday в автозагрузку! Автоматическая смена обоев работать не будет.", "Wallpapers Everyday", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            }
+            else // если ВЫКЛЮЧАЕМ автозагрузку
+            {
+                try
+                {
+                    reg.DeleteValue("Wallpapers Everyday");
+                    return;
+                }
+                catch { }
+            }
+        }
+
         private void bigFolderNotify_Checked(object sender, RoutedEventArgs e) => bigFolderSize.IsEnabled = true;
         private void bigFolderNotify_UnChecked(object sender, RoutedEventArgs e) => bigFolderSize.IsEnabled = false;
         private void saveWin10Interesting_Checked(object sender, RoutedEventArgs e)
@@ -129,5 +154,85 @@ namespace Wallpapers_Everyday
             saveWin10InterestingPath.IsEnabled = false;
             saveWin10InterestingRun.IsEnabled = false;
         }
+
+        private void NextWallpaper_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            // не можем вынести его как поле, т.к. если изменим обои кнопкой + обновим их, список не изменится, а нужно
+            string[] images = Directory.GetFiles($"{Directory.GetCurrentDirectory()}\\Images").OrderByDescending(f => File.GetCreationTime(f)).ToArray(); // получаем список пикч упорядоченный по дате создания 
+            if (Properties.Settings.Default.InstalledWallpaperIndex != 0)
+            {
+                Wallpaper.SetWallpaper(images[--Properties.Settings.Default.InstalledWallpaperIndex]);
+                Properties.Settings.Default.Save();
+            }
+            else
+                icon.ShowBalloonTip("Wallpapers Everyday", "Достигнуты новейшие обои!", BalloonIcon.Info);
+        }
+
+        private void PreviousWallpaper_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            string[] images = Directory.GetFiles($"{Directory.GetCurrentDirectory()}\\Images").OrderByDescending(f => File.GetCreationTime(f)).ToArray(); // получаем список пикч упорядоченный по дате создания 
+            if (Properties.Settings.Default.InstalledWallpaperIndex != images.Length - 1)
+            {
+                Wallpaper.SetWallpaper(images[++Properties.Settings.Default.InstalledWallpaperIndex]);
+                Properties.Settings.Default.Save();
+            }
+            else
+                icon.ShowBalloonTip("Wallpapers Everyday", "Достигнуты старейшие обои!", BalloonIcon.Info);
+        }
+
+        private void SaveWinLogon_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var b = sender as Button;
+            if (b == null)
+            {
+                System.Windows.MessageBox.Show("Команда UpdateWallpaper: отправитель команды не распознан!", "Wallpapers Everyday");
+                return;
+            }
+            b.IsEnabled = false;
+            b.Content = "Минутку...";
+
+            BackgroundWorker bw = new BackgroundWorker();
+            bw.DoWork += (s, ee) => Wallpaper.SaveWin10Interesting(Properties.Settings.Default.Win10IntrestingPath);
+
+            bw.RunWorkerCompleted += (s, ee) => {
+                b.IsEnabled = true;
+                b.Content = "Сохранить заставки \"Windows: Интересное\"";
+            };
+
+            bw.RunWorkerAsync();
+        }
+
+        private void UpdateWallpaper_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var b = sender as Button;
+            if (b == null)
+            {
+                System.Windows.MessageBox.Show("Команда UpdateWallpaper: отправитель команды не распознан!", "Wallpapers Everyday");
+                return;
+            }
+            b.IsEnabled = false;
+            b.Content = "Минутку...";
+
+            BackgroundWorker bw = new BackgroundWorker();
+            bw.DoWork += (s, ee) => {
+                var state = Logic.Work();
+                switch (state.Item1)
+                {
+                    case Logic.FinishCode.Good: break;
+                    case Logic.FinishCode.Warning: Dispatcher.Invoke(() => icon.ShowBalloonTip("Wallpapers Everyday", state.Item2, BalloonIcon.Info)); break;
+                    case Logic.FinishCode.Error: Dispatcher.Invoke(() => icon.ShowBalloonTip("Wallpapers Everyday", state.Item2, BalloonIcon.Error)); break;
+                    case Logic.FinishCode.Fail: MessageBox.Show(state.Item2, "Wallpapers Everyday", MessageBoxButton.OK, MessageBoxImage.Error); break;
+                }
+            };
+
+            bw.RunWorkerCompleted += (s, ee) => {
+                b.IsEnabled = true;
+                b.Content = "Обновить обои сейчас";
+            };
+
+            bw.RunWorkerAsync();
+        }
+
+        private void ShowAboutBox_Executed(object sender, ExecutedRoutedEventArgs e) => new AboutWindows().ShowDialog();
     }
 }
