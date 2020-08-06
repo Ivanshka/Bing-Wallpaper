@@ -40,7 +40,6 @@ namespace Wallpapers_Everyday
             icon.ToolTipText = "Wallpapers Everyday";
             icon.Visibility = Visibility.Visible;
             LoadSettingsToInterface();
-            icon.ShowBalloonTip("Wallpapers Everyday", "Нстройки применяются только после закрытия окна!", BalloonIcon.Info);
         }
 
         private void Window_Closing(object sender, CancelEventArgs e) { icon.Visibility = Visibility.Hidden; SaveSettingsFromInterface(); }
@@ -212,6 +211,9 @@ namespace Wallpapers_Everyday
             }
             b.IsEnabled = false;
             b.Content = "Минутку...";
+
+            // применяем настройки - вдруг они были изменены?
+            SaveSettingsFromInterface();
 
             BackgroundWorker bw = new BackgroundWorker();
             bw.DoWork += (s, ee) => {
