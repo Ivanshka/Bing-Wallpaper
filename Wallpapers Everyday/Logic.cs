@@ -75,6 +75,7 @@ namespace Wallpapers_Everyday
             }
 
             string workDirectory = Directory.GetCurrentDirectory();
+            MessageBox.Show(Properties.Settings.Default.Name);
             // если папки для заставок нет, создаем ее
             Directory.CreateDirectory(workDirectory + @"\images");
             int imagesSize;
@@ -91,11 +92,18 @@ namespace Wallpapers_Everyday
                     // то проверяем, первый ли запуск. и если не первый (т.е. уже есть какой-то скачанный файл)
                     if (Properties.Settings.Default.Name != "no")
                     {
-                        if (Properties.Settings.Default.Debug)
-                            Logs.WriteLogFile("Доступа к Интернету нет. Ставлю последние обои...");
+                        string notification;
                         // то ставим последнюю обоину
-                        Wallpaper.SetWallpaper(workDirectory + "\\images\\" + Properties.Settings.Default.Name);
-                        string notification = "Отсутствует соединение с интернетом! Были поставлены последние обои.";
+                        if (File.Exists(workDirectory + "\\images\\" + Properties.Settings.Default.Name))
+                        {
+                            Wallpaper.SetWallpaper(workDirectory + "\\images\\" + Properties.Settings.Default.Name);
+                            notification = "Отсутствует соединение с интернетом! Были поставлены последние обои.";
+                        }
+                        else
+                            notification = "Отсутствует соединение с интернетом! Не удалось поставить последние обои: файл не найден.";
+
+                        if (Properties.Settings.Default.Debug)
+                            Logs.WriteLogFile(notification);
 
                         imagesSize = WorkWithSystem.GetDirectorySize(workDirectory + "\\images");
                         if (Properties.Settings.Default.Notify && imagesSize > Properties.Settings.Default.MaxFolderSize)
@@ -148,8 +156,13 @@ namespace Wallpapers_Everyday
                 string notification = "Новых обоев пока нет!";
                 if (Properties.Settings.Default.AlwaysSet)
                 {
-                    Wallpaper.SetWallpaper($@"{workDirectory}\images\{temp}");
-                    notification += " Были поставлены последние обои.";
+                    if (File.Exists(workDirectory + "\\images\\" + Properties.Settings.Default.Name))
+                    {
+                        Wallpaper.SetWallpaper($@"{workDirectory}\images\{temp}");
+                        notification += " Были поставлены последние обои.";
+                    }
+                    else
+                        notification = " Не удалось поставить последние обои: файл не найден.";
                 }
                 if (Properties.Settings.Default.Debug)
                     Logs.WriteLogFile(notification);
